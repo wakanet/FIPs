@@ -43,7 +43,9 @@ By introducing new method signatures before behavioural changes, the primary cha
 <!--The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Filecoin implementations. -->
 Within Miner actor, introduce a new method number 28, called `PreCommitSectorBatch2` which is a copy of
 `PreCommitSectorBatch` with following changes:
+
 在Miner actor中，引入一个新的方法编号28，称为`PreCommitSectorBatch2`, 它具有`PreCommitSectorBatch`的副本和以下更改：
+
  - remove of fields related to deprecated and non-functional CC upgrade.
  - 删除与弃用和非功能CC升级相关的字段。
  - introduce a `unsealed_sector_cid` field, a tagged union of `Cid` and `None`.
@@ -71,7 +73,9 @@ pub struct SectorPreCommitInfo {
 
 Within Miner actor, introduce a new method number 29, called `ProveReplicaUpdates2` which is a copy of
 `ProveReplicaUpdates` with following changes:
+
 在Miner actor中，引入一个新的方法编号29，称为`ProveReplicaUpdates2`, 它具有`ProveReplicaUpdates`的副本和以下更改：
+
  - introduce a `new_unsealed_cid` field of type Cid.
  - 引入一个cid类型的`new_unsealed_cid`字段。
  - verify that the UnsealedSectorCID is consistent with UnsealedSectorCID computed from DealIDs.
