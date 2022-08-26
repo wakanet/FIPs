@@ -39,7 +39,7 @@ By introducing new method signatures before behavioural changes, the primary cha
 在这种情况下，推动变革的因素是用户可部署存储市场和FVM可编程性。这两个因素本身, 对内置参与者将是复杂的变化。
 通过在行为更改之前引入新方法签名，主要更改可以省略与旧方法签名的兼容性，从而降低其复杂性和所需工作。
 
-## Specification 说明
+## Specification 详述
 <!--The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Filecoin implementations. -->
 Within Miner actor, introduce a new method number 28, called `PreCommitSectorBatch2` which is a copy of
 `PreCommitSectorBatch` with following changes:
