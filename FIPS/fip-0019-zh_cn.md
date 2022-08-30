@@ -289,24 +289,43 @@ Assume we have 2<sup>9</sup> different hashes. This means that we have a total c
 
 #### Analysis 2: Based on Kolmogorov Complexity (Information Theoretic Argument)
 **Information Theoretic Argument**: Given a string `S` of size N with incompressibility V, for any adversary that modifies `S` into `S'` by flipping T bits of his choice, we have that the incompressibility of `S'` is at least _V - T*(log(N) + log(log(N))+1)_.
+**信息论论据**：给定大小为N且不可压缩性为V的字符串`S`，对于任何通过翻转其选择的T位将`S`修改为`S`的对手而言，`S`的不可压缩至少为_V - T*(log(N) + log(log(N)) + 1)_。
 **Proof**:  Assume by contradiction that there exists a string `S''` which is more compressible than `S'`. 
 Then it means that it is possible to compress `S` into a string `S*` of length  _| S'' | + T*(log(N) + 2*log(log(N))+1) < V_ .
+**证明**：假设存在一个比`S`更可压缩的字符串`S''`。
+则这意味着可以将`S`压缩为长度为_|S'' | + T*(log(N) + 2*log(log(N))+1 ) <V_的字符串`S*`。
 
 Note: _T*(log(N) + 2*log(log(N))+1)_ are the bits needed in order to be able to store the T bit positions where the adversary flipped the bits, using self delimiting codes (References: this [paper](https://eprint.iacr.org/2021/162.pdf), page 9; this [book](https://core.ac.uk/download/pdf/301633813.pdf), Section 2.2).
 
-Given the following:
+注：_T*(log(N) + 2*log(log(N))+1)_是使用自定界码存储敌方翻转位的T位位置所需的位（参考文献：[本文](https://eprint.iacr.org/2021/162.pdf)，第9页；这本[书](https://core.ac.uk/download/pdf/301633813.pdf)，第2.2节）。
+
+Given the following:  
+考虑到以下情况：
 We assume `R` to be incompressible, and we then set the incompressibility of `R` to `N`. 
 We assume an adversary can flip 80 bits of his choice in `R`.
 To be conservative, given that we are considering 2<sup>30</sup>/K different hashes, we apply the compressibility lower bound on a vector of size N' = 2<sup>30</sup>/K nodes
 
+我们假设`R`是不可压缩的，然后将`R`的不可压缩性设为`N`。
+我们假设对手可以在`R`中翻转其选择的80位。
+为了保守起见，假设我们正在考虑2<sup>30</sup>/K个不同的散列，我们将压缩性下界应用于大小为N' = 2<sup>30</sup>/K个节点的向量
+
 According to the lower bound, we get that an adversary that can flip 80 bits of his choice on `R` can not compress `R` to a string that has compressibility smaller than _N' - 80(log(N') + 2*log(log(N')) + 1)_. 
+
+根据下界，我们得出，一个可以在`R`上翻转他选择的80位的对手不能将`R`压缩为可压缩性小于_N' - 80(log(N') + 2*log(log(N')) + 1)_的字符串。
 
 In order to be even more conservative, we are using `N` instead of `N'` in the compressibility reduction factor. We are then considering that R can not be compressed to a string which is less compressible than 2<sup>30</sup>/K  - 80(log(2<sup>30</sup>) + log(log(2<sup>30</sup>)) + 1) = 2<sup>30</sup>/ K - 80(30+11) .
 
+为了更加保守，我们在压缩性折减系数中使用`N`而不是`N`。然后，我们考虑R不能压缩成比2<sup>30</sup>/K - 80(log(2<sup>30</sup>) + log(log(3<sup>30</sup>) + 1）= 2<sup>30</sup>/ K - 8(30+11)可压缩性更小的字符串。
+
 As a consequence, we have that an adversary can compress a total of `80(30+11)*K` bits out of 2<sup>30</sup>.
+
+因此，我们发现，一个对手可以从2<sup>30</sup>中压缩总共`80(30+11)*K`位。
 
 This means that, for K = 2<sup>21</sup> and 2<sup>9</sup> = 512 different hashes, we have that the additional spacegap is < 2.51%. Given in our case the distribution of the last bit of each node is not uniform, we also considered the case of nodes of 255 bits rather than 256. Spacegap in this case is < 2.5123%.
 If we allow for 1024 hashes, additional spacegap is bounded by < 1.26%. If as above we consider nodes of bit length 255 instead of 256 we still obtain that an additional spacegap bounded by  < 1.26%  
+
+这意味着，对于K = 2<sup>21</sup>和2<sup>9</sup> = 512个不同的散列，我们发现额外的空间间隙 < 2.51%。在我们的情况下，每个节点的最后一位的分布不均匀，我们还考虑了255位而不是256位的节点的情况。在这种情况下，空间间隙 < 2.5123%。
+如果我们允许1024个散列，则额外的空间间隙以 < 1.26%为界。如上所述，如果我们考虑位长度为255而不是256的节点，我们仍然可以得到一个由 < 1.26%限定的额外空间间隙
 
 
 ### Poseidon-128
@@ -320,24 +339,34 @@ Domain Separation Tags used:
 
 Domain Separate Tags for both are the same as their inputs are different.
 
-## Incentive Considerations
+## Incentive Considerations 激励因素
 
 SnapDeals does not allow storage providers to release currently held collateral for the sector but it allows
 to reuse that already held collateral if collateral required is greater, for example due to verified deal.
 
-## Product Considerations
+SnapDeals不允许存储提供商为该扇区发放当前持有的抵押品，
+但允许在所需抵押品更大的情况下重新使用已持有的抵押品, 例如由于已验证的交易。
+
+## Product Considerations 产品考虑
 
 Snap Deals protocol significantly reduces the time needed for data to be included in a sector
-and confirmed on-chian. The process was designed with cost for storage providers in mind.
+and confirmed on-chain. The process was designed with cost for storage providers in mind.
 
-## Implementation
+Snap Deals协议大大减少了将数据包含在扇区中并在链上确认所需的时间。
+该过程的设计考虑到了存储提供商的成本。
 
-## Future work
+## Implementation 实现
+
+## Future work 未来工作
 
 * DeclareDeals to support deal transfer: allow moving deals from sector to sector
+* 支持交易转移的申报：允许将交易从一个扇区转移到另一个扇区
 * CapacityDeals: allow purchasing a capacity of the storage of a storage provider instead of the storage of a specific deal
+* CapacityDeals：允许购买存储提供商的存储容量，而不是特定交易的存储容量
 * Update protocol that does not require to perform an operation on a full sector.
+* 不需要在整个扇区上执行操作的更新协议。
 * DealUpdates: a license to terminate a deal in place for a new one (e.g. a user wants to update a portion of their files)
+* DealUpdates：为新交易终止现有交易的许可证（例如，用户希望更新其文件的一部分）
 
 ## Copyright
 
