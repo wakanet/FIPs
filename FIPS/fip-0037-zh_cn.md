@@ -105,6 +105,7 @@ This includes:
 - 潜在地逐步优化机器代码。
 
 **Pricing formula**
+**定价公式**
 
 `<<TODO>>`
 
@@ -123,9 +124,16 @@ that cost, and is computed over the length of the original Wasm bytecode[^2] and
 complexity factors. These factors are determined at deployment time through
 static code analysis, and include:
 
+对于每个非值传输消息[^1]，必须加载参与者的预编译模块，并且必须调用参与者的入口点。
+参与者加载费用涵盖了这一成本，并根据原始Wasm字节码[^2]的长度和复杂度因子计算。
+这些因素在部署时通过静态代码分析确定，包括：
+
 - number of imported syscalls
+- 导入的系统调用数值
 - number of globals
+- 全局数值
 - number of exported entrypoints[^3]
+- 导出的入口点数值[^3]
 
 The loading fee is additive to the extant *call fee*: loading bytecode and
 invoking the loaded bytecode are two separate acts. In fact, an actor loaded
@@ -133,29 +141,47 @@ once can be invoked multiple times during a single call stack. This FIP proposes
 no fee discount/exemption on deduplicated actor loading (such as on
 recursion/reentrancy), but we may consider it in the future.
 
+加载费用与现有的*调用费用*相加：加载字节码和调用加载的字节码是两个单独的行为。
+事实上，一次加载的参与者可以在单个调用堆栈中多次调用。
+本FIP建议对重复数据消除参与者加载（如递归/重入）不提供费用折扣/豁免，但我们可能会在未来考虑。
+
 **Pricing formula**
+**定价公式**
 
 `<<TODO>>`
 
-### Memory expansion gas
+### Memory expansion gas 存储器扩展气体
 
 FVM actors are allowed to allocate memory within predefined bounds. Wasm memory
 is measured and allocated in pages. A page equates to 64KiB of memory. Page
 usage is metered and limited per call; reentrant or recursive calls are
 independent of one another for purposes of memory consumption.
 
+允许FVM参与者在预定义的范围内分配内存。
+Wasm内存以页为单位进行测量和分配。一页相当于64KB的内存。
+页面使用是按每次呼叫计量和限制的；出于内存消耗的目的，可重入或递归调用彼此独立。
+
 Starting with this FIP, actor invocations are granted 1 page for free (64KiB),
 and the cost of that page is accounted for in the call fee. This avoids an
 immediate memory expansion operation on every invocation, as most actors need
 *some* memory to do useful work.
 
+从这个FIP开始，参与者调用被免费授予1页（64KiB），该页的成本计入调用费。
+这避免了每次调用时立即进行内存扩展操作，因为大多数参与者需要*一些*内存来完成有用的工作。
+
 An actor can use any number of pages, but the total page count for the entire
 call stack cannot exceed 8192 pages, i.e. 512MiB. The next allocation must fail
 with an `SysErrOutOfMemory`.
 
+参与者可以使用任意数量的页面，但整个调用堆栈的总页面计数不能超过8192个页面，即512MiB。
+下一次分配必须失败，并出现`SysErrOutOfMemory`。
+
 We introduce a memory expansion fee. Today, we charge a fee for the memory
 expansion operation, dependent on the number of pages requested at a time. This
 is to account for the memory zeroing cost on allocation.
+
+我们引入了内存扩展费。今天，我们对内存扩展操作收取费用，具体取决于一次请求的页面数。
+这是为了考虑分配时的内存归零成本。
 
 This fee does not aim to model the cost of memory *usage*, because the presence
 of a hard limit in a sequential execution environment means that all
@@ -163,30 +189,43 @@ implementations must preallocate and reserve the maximum amount of allocatable
 memory (512MiB) anyway. So, in this context, memory is not a shared or scarce
 resource to tax[^4].
 
+此费用并不旨在模拟内存*使用*的成本，
+因为在顺序执行环境中存在硬限制意味着所有实现都必须预先分配并保留最大数量的可分配内存（512MiB）。
+因此，在这种情况下，内存不是可征税的共享或稀缺资源[^4]。
+
 `<<TODO: consider moving the memory policy to a FIP of its own>>`
 
 **Pricing formula**
+**定价公式**
 
 `<<TODO>>`
 
-### Multihash-dependent hashing fee
+### Multihash-dependent hashing fee 多哈希相关哈希费
 
 Today’s syscall for hashing assumes a Blake2b-256 digest function. This syscall
 will be generalized, so it can hash over a predetermined set of multihash digest
 functions. Because the computational effort varies per digest function, so does
 the updated hashing fee.
 
+今天的散列系统调用采用Blake2b-256摘要函数。
+此系统调用将被泛化，因此它可以在一组预定的多哈希摘要函数上进行哈希。
+由于每个摘要函数的计算工作量不同，因此更新的哈希费也不同。
+
 `<<TODO: specify the syscall generalization in a FIP of its own, or bundle with
 memory policy>>`
 
 **Pricing formula**
+**定价公式**
 
 `<<TODO>>`
 
-### Price currently unpriced syscalls
+### Price currently unpriced syscalls 当前未定价的系统调用的价格
 
 In Filecoin network version 15 and below, these syscalls (or equivalent
 operations) are unpriced. With this FIP, they will acquire a price:
+
+在Filecoin网络版本15及以下，这些系统调用（或等效操作）未定价。
+通过该FIP，他们将获得一个价格：
 
 - `network::epoch, network::version`, `network::base_fee`, `message::caller`,
   `message::receiver`, `message::method_number`, `message::value_received` ,
@@ -206,54 +245,63 @@ operations) are unpriced. With this FIP, they will acquire a price:
     - `<<TODO: limit the lookback>>`
     - The cost of these syscalls is: <<TODO: formula>>.
 
-### Restrict usage of `gas_charge` syscall
+### Restrict usage of `gas_charge` syscall 限制`gas_charge`系统调用的使用
 
 This syscall is available to all actors, but it will be restricted such that
 only built-in actors can effectively make use of it. User-deployed actors will
 have their transactions aborted with exit code `SysErrForbidden` when attempting
 to invoke this syscall.
 
-## Design Rationale
+这个系统调用对所有参与者都可用，但它将受到限制，只有内置参与者才能有效地使用它。
+尝试调用此系统调用时，用户部署的参与者将中止其事务，退出代码为`SysErrForbidden`。
+
+## Design Rationale 设计原理
 
 `<<TODO>>`
 
-## Backwards Compatibility
+## Backwards Compatibility 向后兼容性
 
 `<<TODO>>`
 
-## Test Cases
+## Test Cases 测试用例
 
 `<<TODO>>`
 
-## Security Considerations
+## Security Considerations 安全考虑
 
 `<<TODO>>`
 
-## Incentive Considerations
+## Incentive Considerations 激励因素
 
 `<<TODO>>`
 
-## Product Considerations
+## Product Considerations 产品考虑
 
 `<<TODO>>`
 
-## Implementation
+## Implementation 实施
 
 For clients relying on the reference FVM implementation
 ([filecoin-project/ref-fvm](https://github.com/filecoin-project/ref-fvm)), the
 implementation of this FIP will be transparent, as it is self-contained inside
 the FVM.
 
+对于依赖参考FVM实施的客户（[filecoin项目/ref FVM](https://github.com/filecoin-project/ref-fvm))，
+本FIP的实施将是透明的，因为它在FVM中是独立的。
+
 ## Copyright
 
 Copyright and related rights waived via
 [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
 
-## Footnotes
+## Footnotes 脚注
 
 [^1]: Ideally, it would depend on the length of the compiled *machine code* (as
     this is what’s effectively loaded at invocation time). But because machine
     code is compiler- and platform-dependent, that approach is not feasible.
+
+[^1]: 理想情况下，它将取决于编译的*机器代码*的长度（因为这是在调用时有效加载的）。
+    但由于机器代码依赖于编译器和平台，这种方法是不可行的。
 
 [^2]: Today, value transfers are handled entirely inside the VM. In the future,
     we may want to delegate to the actor. This could be achieved by introducing
@@ -262,11 +310,21 @@ Copyright and related rights waived via
     would need to memorize if a *value transfer entrypoint* exists, to determine
     when actor code should be loaded and when not.
 
+[^2]: 今天，价值转移完全在虚拟机内部处理。在将来，我们可能希望委托给参与者。
+    这可以通过引入*值转移入口点*的概念来实现：一个公开导出的函数，用于处理没有有效负载的消息。
+    在部署时，FVM需要记住是否存在*值转移入口点*，以确定何时应加载参与者代码，何时不加载。
+
 [^3]: Currently, actors only support one entrypoint: the `invoke` function.
     Support for multiple entrypoints may be added in the future to handle value
     transfers, code upgrades, and lazy state migrations.
+
+[^3]: 目前，参与者只支持一个入口点：调用函数。未来可能会添加对多个入口点的支持，
+    以处理价值转移、代码升级和延迟状态迁移。
 
 [^4]: This will change once Filecoin switches to parallel execution, and memory
     becomes a shared resource that determines scheduling decisions and task
     bin-packing. But even under that model, it is unlikely for memory usage
     costs to be folded into gas.
+
+[^4]: 一旦Filecoin切换到并行执行，这将发生变化，内存将成为决定调度决策和任务箱打包的共享资源。
+    但即使在这种模式下，内存使用成本也不太可能折成gas。
