@@ -263,10 +263,14 @@ up front when pre-commiting a sector, in which case this proposal requires no op
 在实践中，我们希望大多数供应商至少存入预期的初始质押价值
 在预委托一个预承诺扇区时，在这种情况下，该提案不需要任何运营变更。
 
-## Implementation
+## Implementation 实现
 Prototype implementation was provided in Go in https://github.com/filecoin-project/specs-actors/pull/1575.
 
+原型实现用Go在https://github.com/filecoin-project/specs-actors/pull/1575中提供.
+
 Slighly improved implementation for Rust built-in actors in https://github.com/filecoin-project/builtin-actors/pull/484.
+
+用Rust内置参与者的实现进行了轻微改进https://github.com/filecoin-project/builtin-actors/pull/484.
 
 ## Copyright
 Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
