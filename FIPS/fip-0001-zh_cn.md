@@ -1,0 +1,258 @@
+---
+fip: "0001"
+title: FIP Purpose and Guidelines
+status: Active
+type: Organizational
+author: Whyrusleeping <whyrusleeping@protocol.ai> 
+discussions-to: https://github.com/filecoin-project/FIPs/issues/
+created: 2019-04-02
+---
+
+## What is a FIP?
+
+FIP stands for Filecoin Improvement Proposal. A FIP is a design document providing information to the Filecoin community, or describing a new feature for Filecoin or its processes or environment. The FIP should provide a concise technical specification of the feature and a rationale for its adoption. The FIP author is responsible for building consensus within the community and documenting dissenting opinions.
+
+FIP代表Filecoin改进方案。FIP是向Filecoin社区提供信息或描述Filecoin或其流程或环境的新功能的设计文档。FIP应提供功能的简明技术规范及其采用的理由。FIP作者负责在社区内建立共识并记录不同意见。
+
+## FIP Rationale
+
+We intend FIPs to be the primary mechanisms for proposing new features, for collecting community technical input on an issue, and for documenting the design decisions that have gone into Filecoin. Because the FIPs are maintained as text files in a versioned repository, their revision history is the historical record of the feature proposal.
+
+However, we also require that, where appropriate, Technical FIPs are also reflected in the protocol's specification, which is the primary source of reference for other developers. The [Filecoin Spec site](https://spec.filecoin.io/) will in turn point back to the FIPs that have changed some part of the protocol, as well as the FIP's revision history.
+
+For Filecoin implementers, FIPs are a convenient way to track the progress of their implementation. Ideally, each implementation maintainer would list the FIPs that they have implemented. This will give end users a convenient way to know the current status of a given implementation or library.
+
+## FIP Types
+
+There are three main types of FIPs:
+
+1. A **Technical FIP** (Filecoin Technical Proposal or **FTP**) describes any change that affects most or all Filecoin implementations, such as a change to the network protocol, a change in block or transaction validity rules, proposed application standards/conventions, or any change or addition that affects the interoperability of applications using Filecoin. Technical FIPs consist of three parts: a design document, an implementation, and, if warranted, an update to the [formal specification](https://filecoin-project.github.io/specs/). Furthermore, technical FIPs can be broken down into the following categories:
+   - **Core** - improvements requiring a consensus upgrade, as well as changes that are not necessarily consensus critical but may be relevant to future consensus upgrades.
+   - **Networking** - includes improvements to data propagation, or any of the Filecoin network protocols (see [Network Interface](https://spec.filecoin.io/#systems__filecoin_nodes__network) in the spec for a full listing). 
+   - **Interface** - includes improvements around client [API/RPC](https://spec.filecoin.io/#systems__filecoin_nodes__node_types__node-interface) specifications and standards, and also certain language-level standards like method names. 
+   - **Informational** - describes a Filecoin design issue, or provides general guidelines or information to the Filecoin community, but does not propose a new feature. Informational FTPs do not necessarily represent Filecoin community consensus or a recommendation, so users and implementers are free to ignore Informational FTPs or follow their advice.
+
+2. An **Organizational FIP** (Filecoin Organizational Proposal or **FOP**) describes a process surrounding Filecoin or proposes a change to (or an event in) a process. Process FIPs are like Standards Track FIPs but apply to areas other than the Filecoin protocol itself. They may propose an implementation, but not to Filecoin's codebase; they often require community consensus; unlike Informational FIPs, they are more than recommendations, and users are typically not free to ignore them. Examples include procedures, guidelines, changes to the decision-making process, changes to the FIP process, and changes to the tools or environment used in Filecoin development.
+
+3. A **Recovery FIP** (Filecoin Recovery Proposal or **FRP**) proposes a state change that is necessary and that cannot be addressed using the standard protocol. FRPs are only valid under a limited, clearly-defined set of criteria (e.g., in the case of protocol bugs destroying network value). The FRP should describe the issue to be corrected, explain why an irregular state change is necessary and justified, and demonstrate that the proposed actions will achieve the FRP's objectives.
+
+It is highly recommended that a single FIP contain a single key proposal or new idea. The more focused the FIP, the more successful it tends to be. A change to one client doesn't require a FIP; a change that affects multiple implementations, or defines a standard for multiple clients to use, does.
+
+A FIP must meet certain minimum criteria. It must be a clear and complete description of the proposed enhancement. The enhancement must represent a net improvement. The proposed implementation, if applicable, must be solid and must not complicate the protocol unduly.
+
+## FIP Work Flow
+
+Parties involved in the process are you, the champion or *FIP author*, the [*FIP editors*](#fip-editors), and the *Filecoin Core Developers*.
+
+:warning: Before you begin, vet your idea, this will save you time. Ask the Filecoin community first if an idea is original to avoid wasting time on something that will be rejected based on prior research (searching the Internet does not always do the trick). It also helps to make sure the idea is applicable to the entire community and not just the author. Just because an idea sounds good to the author does not mean it will work for most people in most areas where Filecoin is used. Examples of appropriate public forums to gauge interest around your FIP include [the Issues section of this repository](https://github.com/filecoin-project/FIPs/issues), [the Filecoin Discourse Forum](https://discuss.filecoin.io/), and [the Filecoin community chat](https://docs.filecoin.io/community/chat-and-discussion-forums/). In particular, [the Issues section of this repository](https://github.com/filecoin-project/FIPs/issues) is an excellent place to discuss your proposal with the community and start creating more formalized language around your FIP.
+
+Your role as the champion is to write the FIP using the style and format described below, shepherd the discussions in the appropriate forums, and build community consensus around the idea. Following is the process that a successful FIP will move along:
+
+```
+[ WIP ] -> [ DRAFT ] -> [ LAST CALL ] -> [ ACCEPTED ] -> [ FINAL ]
+```
+
+Each status change is requested by the FIP author and reviewed by the FIP editors. Use a pull request to update the status. Please include a link to where people should continue discussing your FIP. The FIP editors will process these requests as per the conditions below.
+
+* **Active** -- Some Informational and Organizational FIPs may also have a status of “Active” if they are never meant to be completed. E.g. FIP-1 (this FIP).
+* **Work in progress (WIP)** -- Once the champion has asked the Filecoin community whether an idea has any chance of support, they will write a draft FIP as a [pull request](https://github.com/filecoin-project/FIPs/pulls). Consider including an implementation if this will aid people in studying the FIP.
+  * :arrow_right: Draft -- If agreeable, FIP editor will assign the FIP a number and merge your pull request. The FIP editor will not unreasonably deny a FIP.
+  * :x: Draft -- Reasons for denying draft status include being too unfocused, too broad, duplication of effort, being technically unsound, not providing proper motivation or addressing backwards compatibility, or not in keeping with the [Filecoin improvement principles](https://github.com/filecoin-project/FIPs/blob/master/README.md).
+* **Draft** -- After the first draft is merged, you may still submit follow-up pull requests with further changes until you believe the FIP to be mature and ready to proceed to the next status. A FIP in draft status must be implemented to be considered for promotion to the next status (ignore this requirement for core FIPs).
+  * :arrow_right: Last Call -- If agreeable, the FIP editor will assign Last Call status and set a review end date (`review-period-end`), normally 14 days later.
+  * :x: Last Call -- A request for Last Call status will be denied if material changes are still expected to be made to the draft. We hope that FIPs only enter Last Call once, so as to avoid unnecessary noise.
+* **Last Call** -- This FIP will be listed prominently on the Filecoin website
+  * :x: -- A Last Call which results in material changes or substantial unaddressed technical complaints will cause the FIP to revert to Draft.
+  * :arrow_right: Accepted (Core FIPs only) -- A successful Last Call without material changes or unaddressed technical complaints will become Accepted.
+  * :arrow_right: Final (Not core FIPs) -- A successful Last Call without material changes or unaddressed technical complaints will become Final.
+* **Accepted (Core FIPs only)** -- This FIP is in the hands of the Filecoin implementation developers.  Their process for deciding whether to encode it into their clients as part of a consensus upgrade is not part of the FIP process.
+  * :arrow_right: Final -- Standards Track Core FIPs must be implemented in at least two viable Filecoin clients before they can be considered Final. A Pull Request to the [Filecoin Specification repository](https://github.com/filecoin-project/specs) updating the text of the spec to describe the protocol changes should also be submitted before the FIP can proceed to the Final status. When the implementation is complete and adopted by the community, the status will be changed to “Final”.
+* **Final** -- This FIP represents the current state-of-the-art. A Final FIP should only be updated to correct errata.
+
+Other exceptional statuses include:
+
+* **Deferred** -- This is for core FIPs that have been put off for a future consensus upgrade.
+* **Rejected** -- A FIP that is fundamentally broken or a Core FIP that was rejected by the Core Devs and will not be implemented.
+* **Active** -- This is similar to Final, but denotes a FIP which may be updated without changing its FIP number.
+* **Superseded** -- A FIP which was previously final but is no longer considered state-of-the-art. Another FIP will be in Final status and reference the Superseded FIP.
+
+## What belongs in a successful FIP?
+
+Each FIP should have the following parts:
+
+- Preamble - RFC 822 style headers containing metadata about the FIP, including the FIP number, a short descriptive title (limited to a maximum of 44 characters), and the author details. See [below](https://github.com/filecoin-project/FIPs/blob/master/FIPS/fip-1.md#fip-header-preamble) for details.
+- Simple Summary - “If you can’t explain it simply, you don’t understand it well enough.” Provide a simplified and layman-accessible explanation of the FIP.
+- Abstract - a short (~200 word) description of the technical issue being addressed.
+- Motivation (*optional*) - The motivation is critical for FIPs that want to change the Filecoin protocol. It should clearly explain why the existing protocol specification is inadequate to address the problem that the FIP solves. FIP submissions without sufficient motivation may be rejected outright.
+- Specification - The technical specification should describe the syntax and semantics of any new feature or process. Technical specifications should be detailed enough to allow competing, interoperable implementations for any of the current Filecoin platforms.
+- Rationale - The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages. The rationale may also provide evidence of consensus within the community, and should discuss important objections or concerns raised during discussion.
+- Backwards Compatibility - All FIPs that introduce backwards incompatibilities must include a section describing these incompatibilities and their severity. The FIP must explain how the author proposes to deal with these incompatibilities. FIP submissions without a sufficient backwards compatibility treatise may be rejected outright.
+- Test Cases - Test cases for an implementation are mandatory for FIPs that are affecting consensus changes. Other FIPs can choose to include links to test cases if applicable.
+- Security Considerations - All FIPs must contain a section that discusses the security implications/considerations relevant to the proposed change. Include information that might be important for security discussions, surfaces risks and can be used throughout the life cycle of the proposal. E.g. include security-relevant design decisions, concerns, important discussions, implementation-specific guidance and pitfalls, an outline of threats and risks and how they are being addressed. FIP submissions missing the "Security Considerations" section will be rejected. A FIP cannot proceed to status "Final" without a Security Considerations discussion deemed sufficient by the reviewers.
+- Implementations - The implementations must be completed before any FIP is given status “Final”, but it need not be completed before the FIP is merged as draft. While there is merit to the approach of reaching consensus on the specification and rationale before writing code, the principle of “rough consensus and running code” is still useful when it comes to resolving many discussions of API details.
+- Copyright Waiver - All FIPs must be in the public domain. See the bottom of this FIP for an example copyright waiver.
+
+## FIP Formats and Templates
+
+FIPs should be written in [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) format.
+Image files should be included in a subdirectory of the `assets` folder for that FIP as follow: `assets/fip-X` (for fip **X**). When linking to an image in the FIP, use relative links such as `../assets/fip-X/image.png`.
+
+## FIP Header Preamble
+
+Each FIP must begin with an RFC 822 style header preamble, preceded and followed by three hyphens (`---`). The headers must appear in the following order. Headers marked with "*" are optional and are described below. All other headers are required.
+
+` fip:` \<FIP number\> (this is determined by the FIP editor)
+
+` title:` \<FIP title\>
+
+` author:` \<a list of the author's or authors' name(s) and/or username(s), or name(s) and email(s). Details are below.\>
+
+` * discussions-to:` \<a url pointing to the official discussion thread\>
+
+` status:` \<Draft | Last Call | Accepted | Final | Active | Deferred | Rejected | Superseded\>
+
+`* review-period-end:` \<date review period ends\>
+
+` type:` \<Technical (Core, Networking, Interface, FRC) | Organizational | Recovery\>
+
+` * category:` \<Core | Networking | Interface | FRC\>
+
+` created:` \<date created on\>
+
+`spec-sections:` A list of Spec sections that the FIP is updating.
+
+`spec-pr:` The URL for the PR updating the Spec.
+
+` * updated:` \<comma separated list of dates\>
+
+` * requires:` \<FIP number(s)\>
+
+` * replaces:` \<FIP number(s)\>
+
+` * superseded-by:` \<FIP number(s)\>
+
+` * resolution:` \<a url pointing to the resolution of this FIP\>
+
+Headers that permit lists must separate elements with commas.
+
+Headers requiring dates will always do so in the format of ISO 8601 (yyyy-mm-dd).
+
+#### `author` header
+
+The `author` header optionally lists the names, email addresses or usernames of the authors/owners of the FIP. Those who prefer anonymity may use a username only, or a first name and a username. The format of the author header value must be:
+
+> Random J. User &lt;address@dom.ain&gt;
+
+or
+
+> Random J. User (@username)
+
+if the email address or GitHub username is included, and
+
+> Random J. User
+
+if the email address is not given.
+
+#### `resolution` header
+
+The `resolution` header is required for Standards Track FIPs only. It contains a URL that should point to an email message or other web resource where the pronouncement about the FIP is made.
+
+#### `discussions-to` header
+
+While a FIP is a draft, a `discussions-to` header will indicate the mailing list or URL where the FIP is being discussed. As mentioned above, examples for places to discuss your FIP include the [Filecoin Forum on Discourse](https://discuss.filecoin.io/) or an issue in this repo. 
+
+No `discussions-to` header is necessary if the FIP is being discussed privately with the author. 
+
+As a single exception, `discussions-to` cannot point to GitHub pull requests.
+
+#### `type` header
+
+The `type` header specifies the type of FIP: Technical, Organizational, or Recovery. If the track is Technical please include the subcategory (core, networking, interface, or informational).
+
+#### `category` header
+
+The `category` header specifies the FIP's category. This is required for technical FIPs only.
+
+#### `created` header
+
+The `created` header records the date that the FIP was assigned a number. Both headers should be in yyyy-mm-dd format, e.g. 2001-08-14.
+
+#### `spec-sections`
+
+Spec sections that the FIP is updating, each section has an ID that can be found in the Spec website under each section "three dot" menu. Example: https://github.com/filecoin-project/FIPs/pull/11#issuecomment-713435889.
+
+Example:
+```yaml 
+spec-sections:
+  - section-intro
+  - section-libraries.libp2p
+  - section-systems.filecoin_markets.storage_market.deal-flow
+  ```
+
+#### `updated` header
+
+The `updated` header records the date(s) when the FIP was updated with "substantional" changes. This header is only valid for FIPs of Draft and Active status.
+
+#### `requires` header
+
+FIPs may have a `requires` header, indicating the FIP numbers that this FIP depends on.
+
+#### `superseded-by` and `replaces` headers
+
+FIPs may also have a `superseded-by` header indicating that a FIP has been rendered obsolete by a later document; the value is the number of the FIP that replaces the current document. The newer FIP must have a `replaces` header containing the number of the FIP that it rendered obsolete.
+
+## Auxiliary Files
+
+FIPs may include auxiliary files such as diagrams. Such files must be named FIP-XXXX-Y.ext, where “XXXX” is the FIP number, “Y” is a serial number (starting at 1), and “ext” is replaced by the actual file extension (e.g. “png”).
+
+## Transferring FIP Ownership
+
+It occasionally becomes necessary to transfer ownership of FIPs to a new champion. In general, we'd like to retain the original author as a co-author of the transferred FIP, but that's really up to the original author. A good reason to transfer ownership is because the original author no longer has the time or interest in updating it or following through with the FIP process, or has fallen off the face of the 'net (i.e. is unreachable or isn't responding to email). A bad reason to transfer ownership is because you don't agree with the direction of the FIP. We try to build consensus around a FIP, but if that's not possible, you can always submit a competing FIP.
+
+If you are interested in assuming ownership of a FIP, send a message asking to take over, addressed to both the original author and the FIP editor. If the original author doesn't respond to email in a timely manner, the FIP editor will make a unilateral decision (which can be reversed).
+
+## FIP Editors
+
+The current FIP editors are
+
+* Molly Mackinlay (@momack2)
+* Aayush Rajasekaran (@arajasek)
+* Jennifer Wang (@jennijuju)
+* Kaitlin Beegle (@kaitlin-beegle)
+* Alex North (@anorth)
+
+## FIP Editor Responsibilities
+
+For each new FIP that comes in, an editor does the following:
+
+- Read the FIP to check if it is ready: sound and complete. The ideas must make technical sense, even if they don't seem likely to get to final status.
+- The title should accurately describe the content.
+- Check the FIP for language (spelling, grammar, sentence structure, etc.), markup (GitHub flavored Markdown), code style
+
+If the FIP isn't ready, the editor will send it back to the author for revision, with specific instructions.
+
+Once the FIP is ready for the repository, the FIP editor will:
+
+- Assign a FIP number (generally the PR number or, if preferred by the author, the Issue # if there was discussion in the Issues section of this repository about this FIP)
+
+- Merge the corresponding pull request
+
+- Check whether the FIP needs to be accompanied by an update to the specification and if so, make sure that a PR to spec repository has been submitted and that the text that updates the spec is reflecting the changes that the FIP proposes.
+
+- Send a message back to the FIP author with the next step.
+
+Many FIPs are written and maintained by developers with write access to the Filecoin codebase. The FIP editors monitor FIP changes, and correct any structure, grammar, spelling, or markup mistakes we see.
+
+The editors don't pass judgment on FIPs. They merely do the administrative & editorial part.
+
+## History
+
+This document was derived heavily from [Ethereum's EIP-1](https://github.com/ethereum/EIPs) written by Martin Becze and Hudson Jameson, which was derived from [Bitcoin's BIP-0001](https://github.com/bitcoin/bips) written by Amir Taaki, which in turn was derived from [Python's PEP-0001](https://www.python.org/dev/peps/). In many places text was simply copied and modified. The authors of the previous texts on which this process is based are not responsible for the Filecoin Improvement Process and should not be bothered with questions. Please direct all comments to the FIP editors.
+
+### April 2, 2019: FIP-1 created from EIP-1
+
+See [the revision history for further details](https://github.com/filecoin-project/FIPs/commits/master/FIPS/fip-0001.md), which is also available by clicking on the History button in the top right of the FIP.
+
+## Copyright
+
+Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
