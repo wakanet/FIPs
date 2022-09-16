@@ -1,0 +1,108 @@
+---
+fip: "0015"
+title: Revert FIP-0009 (Exempt Window PoSts from BaseFee burn)
+author: jennijuju (@jennijuju), arajasek (@arajasek)
+discussions-to: https://github.com/filecoin-project/FIPs/issues/86
+status: Final
+type: Technical
+category: Core
+created: 2021-05-20
+review-period-end: 2021-05-31
+---
+
+## Simple Summary 简述
+
+Revert FIP-0009, which exempts Window PoSts from BaseFee burn.
+
+恢复FIP-0009，它免除了BaseFee燃烧中的窗口时空证明。
+
+## Abstract 摘要
+
+Do not "refund" any burned gas from any `SubmitWindowedPoSt` message sent on-chain. 
+
+不要从链上发送的任何“SubmitWidowedPost”消息中“退款”任何燃烧的gas。
+
+## Change Motivation
+
+FIP-0009, which exempts select `SubmitWindowedPoSt` message from base-fee burn, was introduced in December, 2020, as a short-term stopgap to reduce the impact of rising base fee on the gas cost for continuously proving existing storage.
+
+Since then, three long-term solutions for addressing this issue have been accepted in the network:
+- [FIP-0010](https://github.com/filecoin-project/FIPs/blob/master/FIPS/fip-0010.md), which introduced optimistic acceptance of Window PoSt proofs without verification, while allowing them to be disputed later by off-chain verifiers. As a result, the `GasUsed` for an arbitrary `SubmitWindowedPost` message fell by more than 90%.
+- [FIP-0013](https://github.com/filecoin-project/FIPs/blob/master/FIPS/fip-0013.md), which adds a `ProveCommitAggregated` method to condense multiple proof verifications (SNARKs) into a single aggregated message that takes up less chain bandwidth. The FIP has been accepted and will be introduced in the network in the upcoming [HyperDrive upgrade](https://github.com/filecoin-project/community/discussions/74#discussioncomment-707228). This feature will relieve the network congestion as SnarkPack can aggregate 8192 SNARK proofs, whcih allows miners to submit `ProveCommitments` for up to 819 sectors in one `ProveCommitAggregated` message.
+- [FIP-0008](https://github.com/filecoin-project/FIPs/blob/master/FIPS/fip-0008.md), which adds a method for a miner to submit batched pre-commitments for multiple sectors. This serves to further increase chain bandwidth and will also be introduced in the network in the upcoming HyperDrive upgrade.
+
+In addition, the "free" Window Posts distorts the gas market and reduces the incentive for miners to batch as many partitions as possible into one `SubmitWindowedPoSt` message, which wastes chain bandwidth.
+
+## Specification
+
+Treat `SubmitWindowedPoSt` messages the same as all others for the purpose of gas accounting. Specifically, do NOT "refund" any burned gas when accounts send successful message to a miner actor's `SubmitWindowedPoSt` method.
+
+## Design Rationale
+
+The simple design is to simply stop applying the rule introduced in FIP-0009 past a certain point.
+
+## Backwards Compatibility
+
+This FIP requires a network upgrade at a specific epoch to ensure that all node operators abide by the new pricing rules after that epoch.
+
+## Test Cases
+
+After the change, the "GasCost" of a successful, direct `SubmitWindowedPoSt` message must change from:
+
+```json
+{
+  "Message": {
+    "/": "bafy2bzacedhftxcnozkaeleau4szu2vpvksbjs2xkpracp6xvdog6gucnzxdc"
+  },
+  "GasUsed": "125122238",
+  "BaseFeeBurn": "0",
+  "OverEstimationBurn": "466093200",
+  "MinerPenalty": "0",
+  "MinerTip": "15543374565710",
+  "Refund": "151788019038",
+  "TotalCost": "15556352882710"
+}
+```
+
+To:
+
+```json
+{
+  "Message": {
+    "/": "bafy2bzacedfyp5mz6le43iifaviw2g7hgiqr3eet2bfdzffbitphyubjzzgpy"
+  },
+  "GasUsed": "125122238",
+  "BaseFeeBurn": "12512223800",
+  "OverEstimationBurn": "466093200",
+  "MinerPenalty": "0",
+  "MinerTip": "15723304407057",
+  "Refund": "164300242838",
+  "TotalCost": "15723770500257"
+}
+```
+
+Specifically, the `BaseFeeBurn` is NOT 0.
+
+
+## Security Considerations
+
+This FIP is strictly an increase in security, since it does away with the minor risks introduced in FIP-0009 (see [here](https://github.com/filecoin-project/FIPs/blob/master/FIPS/fip-0009.md#security-considerations)).
+
+## Incentive Considerations
+
+The FIP leads to more FIL being burned through the act of proving storage, making it marginally more expensive for miners to be a part of the network. However, this cost is insignificant, less than 1/60th the FIL burned through onboarding storage. The overall cost is about 10,000 FIL per week.
+
+The FIP disincentivizes miners from splitting their partitions across multiple `SubmitWindowedPost` messages, which is an overall improvement to chain capacity. Risk-averse miners can continue to do so, paying a fair price.
+
+The FIP has no impact on the incentive for miners to select `SubmitWindowedPost` messages to be included in their blocks. 
+
+## Product Considerations
+
+After the network upgrade, miners should pay attention to the _fee cap_ of `SubmitWindowedPost` message to avoid unexpected and unnecessary base fee burn.
+
+## Implementation
+
+PENDING PR
+
+## Copyright
+Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
